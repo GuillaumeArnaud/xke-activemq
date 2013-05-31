@@ -4,17 +4,21 @@ exercice1 {
 
     messages {
         size {
-            mean = 10000
-            total = 100000000
+            mean = 100
+            total = 5000000
         }
         count = size.total / size.mean
     }
 
     sender {
-        count = 1
+        count = 20
+        url = "nio://localhost:61616"//?jms.useAsyncSend=true"
+        delay = 0
     }
 
     receiver {
-        count = 1
+        count = 10
+        url = "nio://localhost:61616"
+        delay = 0
     }
 }

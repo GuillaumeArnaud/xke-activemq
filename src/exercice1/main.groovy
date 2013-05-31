@@ -1,13 +1,16 @@
 @Grab(group = 'com.netflix.rxjava', module = 'rxjava-groovy', version = '0.8.4') @Grab(group = "org.apache.activemq", module = "activemq-all", version = "5.8.0")
 import javax.jms.Connection
+import javax.jms.Message
 import javax.jms.Session
 import javax.management.ObjectName
 import javax.management.remote.JMXConnectorFactory
 import javax.management.remote.JMXServiceURL
 import java.util.concurrent.LinkedBlockingQueue
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicLong
 
 import static java.lang.System.nanoTime
+import static java.util.concurrent.TimeUnit.MILLISECONDS
 import static java.util.concurrent.TimeUnit.NANOSECONDS
 import static java.util.concurrent.TimeUnit.SECONDS
 
@@ -37,14 +40,18 @@ nbSndr.times {
         void run() {
             def sender
             try {
-                sender = new Sender(config, queueName)
-
+                sender = new Sender(config, queueName, config.sender.url)
+                def sndCounter = 0
+                println "start the sender $it"
                 long startTime = nanoTime()
                 while (currSndMsg.get() < msqCnt) {
                     long m = currSndMsg.getAndIncrement()
                     sender.send(sender.create(m))
+                    sndCounter++
+                    // simulate application work
+                    sleep(config.sender.delay)
                 }
-                sndStopped << nanoTime() - startTime
+                sndStopped << (nanoTime() - startTime - sndCounter * MILLISECONDS.toNanos(config.sender.delay))
             } finally {
                 if (sender) sender.close()
             }
@@ -59,17 +66,22 @@ nbRcvr.times {
             Receiver receiver
             try {
                 def stop = false
-
-                receiver = new Receiver(config,queueName)
+                receiver = new Receiver(config, queueName, config.receiver.url)
+                println "start the receiver $it"
+                def rcvCounter = 0
+                Message msg
 
                 def startTime = nanoTime()
                 while (!stop) {
-                    def msg = receiver.receive()
-
+                    msg = receiver.receive(rcvCounter++)
                     stop = msg.getBooleanProperty("poison.pill")
                     if (!stop) currRcvMsg.incrementAndGet()
+                    else println "poison pill received for receiver $it"
+
+                    // simulate application work
+                    sleep(config.receiver.delay)
                 }
-                rcvStopped << nanoTime() - startTime
+                rcvStopped << (nanoTime() - startTime - rcvCounter * MILLISECONDS.toNanos(config.receiver.delay))
             } finally {
                 if (receiver) receiver.close()
             }
@@ -93,21 +105,21 @@ new Thread(new Runnable() {
     cumulative total elapsed time : ${NANOSECONDS.toMillis(cumulativeElapsedTime)}ms
     total sent requests : ${currSndMsg.intValue()}
     avg send elapsed time : ${NANOSECONDS.toMillis((long) cumulativeElapsedTime / currSndMsg.get().intValue())}ms/req
+    avg req/s : ${currSndMsg.get().intValue() / Math.max(NANOSECONDS.toSeconds((long) overallElapsedTime),1)}req/s
+    throughput : ${config.messages.size.total / Math.max(NANOSECONDS.toSeconds((long) overallElapsedTime),1)}o/s
  start poison pills
 """
         // send poison pills to receivers
         def sender
         try {
-            sender = new Sender(config,queueName)
+            sender = new Sender(config, queueName)
 
             def poisonPill = sender.create(0)
-            poisonPill.setBooleanProperty("poison.pill" +
-                    "", true)
-
+            poisonPill.setBooleanProperty("poison.pill", true)
             def rcvElapsed = []
             nbRcvr.times {
                 sender.send(poisonPill)
-                rcvElapsed << rcvStopped.poll(1, SECONDS)
+                rcvElapsed << rcvStopped.take()
             }
 
             cumulativeElapsedTime = rcvElapsed.sum() as long
@@ -119,6 +131,8 @@ new Thread(new Runnable() {
     cumulative total elapsed time : ${NANOSECONDS.toMillis(cumulativeElapsedTime)}ms
     total received requests : ${currRcvMsg.intValue()}
     avg reception elapsed time : ${NANOSECONDS.toMillis((long) cumulativeElapsedTime / currRcvMsg.intValue())}ms/req
+    avg req/s : ${currRcvMsg.get().intValue() / NANOSECONDS.toSeconds((long) overallElapsedTime)}req/s
+    throughput : ${config.messages.size.total / NANOSECONDS.toSeconds((long) overallElapsedTime)}o/s
 """
         } finally {
             if (sender) sender.close()

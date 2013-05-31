@@ -16,21 +16,20 @@ public class Sender {
     def final config
     def final messageContent
 
-    public Sender(def config, String queueName, String host = "localhost", int port = 61616) {
-        session = createQueueSession(host, port)
+    public Sender(def config, String queueName, String url="tcp://localhost:61616") {
+        session = createQueueSession(url)
         queue = session.createQueue(queueName)
         producer = session.createProducer(queue)
         producer.setDeliveryMode(DeliveryMode.PERSISTENT)
         this.config = config
         StringBuffer msgBuf = new StringBuffer()
-        config.messages.size.mean.times { msgBuf.append("0") }
+        config.messages.size.mean.times { msgBuf.append('0') }
         messageContent = msgBuf.toString()
-        println this.messageContent
     }
 
-    private static QueueSession createQueueSession(String host = "localhost", int port = 61616) {
+    private static QueueSession createQueueSession(String url) {
         // create the connection
-        def connection = new ActiveMQConnectionFactory("tcp://$host:$port").createQueueConnection()
+        def connection = new ActiveMQConnectionFactory(url).createQueueConnection()
         connection.start()
 
         // create the session

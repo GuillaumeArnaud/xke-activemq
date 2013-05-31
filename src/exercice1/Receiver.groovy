@@ -16,16 +16,16 @@ public class Receiver {
     final QueueReceiver receiver
     final def config
 
-    public Receiver(def config, String queueName, String host = "localhost", int port = 61616) {
-        session = createQueueSession(host, port)
+    public Receiver(def config, String queueName, String url = "localhost:61616") {
+        session = createQueueSession(url)
         queue = session.createQueue(queueName)
         receiver = session.createReceiver(queue)
         this.config = config
     }
 
-    private static QueueSession createQueueSession(String host = "localhost", int port = 61616) {
+    private static QueueSession createQueueSession(String url) {
         // create the connection
-        ActiveMQConnection connection = new ActiveMQConnectionFactory("tcp://$host:$port").createQueueConnection() as ActiveMQConnection
+        ActiveMQConnection connection = new ActiveMQConnectionFactory(url).createQueueConnection() as ActiveMQConnection
         connection.start()
 
         // create the session
@@ -46,7 +46,7 @@ public class Receiver {
         if (session) session.closeAll()
     }
 
-    def Message receive() {
+    def Message receive(int currCounter) {
         receiver.receive()
     }
 
