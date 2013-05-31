@@ -1,3 +1,4 @@
+@Grab(group = "org.apache.activemq", module = "activemq-all", version = "5.8.0")
 import org.apache.activemq.ActiveMQConnectionFactory
 
 import javax.jms.Connection

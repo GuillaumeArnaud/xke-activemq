@@ -19,7 +19,7 @@ println status.text
 
 if ("start".equals(args[0])) {
     (1..(args.length - 1)).each { brokerId ->
-        def commandline = "$ACTIVEMQ_HOME/bin/activemq -Dactivemq.conf=$ACTIVEMQ_CONF/brokers start xbean:file:$ACTIVEMQ_CONF/brokers/broker${brokerId}.xml 1>/dev/null  &"
+        def commandline = "$ACTIVEMQ_HOME/bin/activemq -Dactivemq.conf=$ACTIVEMQ_CONF/brokers start xbean:file:$ACTIVEMQ_CONF/brokers/broker${brokerId}.xml       &"
         println commandline
         def start = commandline.execute()
         start.waitFor()

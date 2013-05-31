@@ -9,9 +9,9 @@ import static java.util.concurrent.TimeUnit.SECONDS
 
 Thread.sleep(10000)
 
-def maxMsg = 5000000
-def nbSndr = 30
-def nbRcvr = 30
+def maxMsg = 5000
+def nbSndr = 1
+def nbRcvr = 1
 
 def queueName = "test"
 AtomicLong currSndMsg = new AtomicLong(0), currRcvMsg = new AtomicLong(0)
