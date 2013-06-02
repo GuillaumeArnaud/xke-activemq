@@ -1,4 +1,11 @@
-@Grab(group = 'com.netflix.rxjava', module = 'rxjava-groovy', version = '0.8.4') @Grab(group = "org.apache.activemq", module = "activemq-all", version = "5.8.0")
+#!/usr/bin/env groovy
+
+@Grapes([
+        @Grab(group = 'com.netflix.rxjava', module = 'rxjava-groovy', version = '0.8.4'),
+        @Grab(group = "org.apache.activemq", module = "activemq-all", version = "5.8.0")
+])
+
+
 import javax.jms.Connection
 import javax.jms.Message
 import javax.jms.Session
@@ -6,13 +13,11 @@ import javax.management.ObjectName
 import javax.management.remote.JMXConnectorFactory
 import javax.management.remote.JMXServiceURL
 import java.util.concurrent.LinkedBlockingQueue
-import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicLong
 
 import static java.lang.System.nanoTime
 import static java.util.concurrent.TimeUnit.MILLISECONDS
 import static java.util.concurrent.TimeUnit.NANOSECONDS
-import static java.util.concurrent.TimeUnit.SECONDS
 
 def config = new ConfigSlurper().parse(new File('../conf/properties.groovy').toURL()).exercice1
 
@@ -105,8 +110,8 @@ new Thread(new Runnable() {
     cumulative total elapsed time : ${NANOSECONDS.toMillis(cumulativeElapsedTime)}ms
     total sent requests : ${currSndMsg.intValue()}
     avg send elapsed time : ${NANOSECONDS.toMillis((long) cumulativeElapsedTime / currSndMsg.get().intValue())}ms/req
-    avg req/s : ${currSndMsg.get().intValue() / Math.max(NANOSECONDS.toSeconds((long) overallElapsedTime),1)}req/s
-    throughput : ${config.messages.size.total / Math.max(NANOSECONDS.toSeconds((long) overallElapsedTime),1)}o/s
+    avg req/s : ${currSndMsg.get().intValue() / Math.max(NANOSECONDS.toSeconds((long) overallElapsedTime), 1)}req/s
+    throughput : ${config.messages.size.total / Math.max(NANOSECONDS.toSeconds((long) overallElapsedTime), 1)}o/s
  start poison pills
 """
         // send poison pills to receivers
@@ -131,8 +136,8 @@ new Thread(new Runnable() {
     cumulative total elapsed time : ${NANOSECONDS.toMillis(cumulativeElapsedTime)}ms
     total received requests : ${currRcvMsg.intValue()}
     avg reception elapsed time : ${NANOSECONDS.toMillis((long) cumulativeElapsedTime / currRcvMsg.intValue())}ms/req
-    avg req/s : ${currRcvMsg.get().intValue() / NANOSECONDS.toSeconds((long) overallElapsedTime)}req/s
-    throughput : ${config.messages.size.total / NANOSECONDS.toSeconds((long) overallElapsedTime)}o/s
+    avg req/s : ${currRcvMsg.get().intValue() / NANOSECONDS.toSeconds((long) overallElapsedTime)} req/s
+    throughput : ${config.messages.size.total / NANOSECONDS.toSeconds((long) overallElapsedTime)} o/s
 """
         } finally {
             if (sender) sender.close()
