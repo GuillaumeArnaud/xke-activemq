@@ -3,7 +3,7 @@ xke-activemq
 
 Hands on pour le XKE d'ActiveMQ
 
-Exercice 1
+# Exercice 1
 
 * 1 broker / 1 sender / 1 receiver
 * start / stop du broker
@@ -18,7 +18,7 @@ A faire:
 5. relancer l'envoi des messages mais redémarrer le broker durant le test: `./activemq.sh restart 1`
 6. corriger les erreurs afin de ne perdre aucun message
 
-Exercice 2
+# Exercice 2
 
 * 1 broker / 1 sender / 1 receiver
 * taille des messages variables
