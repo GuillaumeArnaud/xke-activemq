@@ -9,7 +9,7 @@ def usage = "groovy activemq.groovy [start|stop] [[1-6] ]+.\nFor instance: \ngro
 if (!args || args.length < 2) println "missing parameters :\n $usage"
 
 /*
-def status="$ACTIVEMQ_HOME/bin/activemq -Dactivemq.conf=$ACTIVEMQ_CONF status xbean:file:$ACTIVEMQ_CONF/broker1.xml&".execute()
+def status="$ACTIVEMQ_HOME/bin/activemq -Dactivemq.conf=$ACTIVEMQ_CONF status xbean:file:$ACTIVEMQ_CONF/broker.xml&".execute()
 status.waitFor()
 println status.text
 println status.exitValue()

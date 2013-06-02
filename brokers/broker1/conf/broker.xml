@@ -34,7 +34,7 @@
     <!--
         The <broker> element is used to configure the ActiveMQ broker.
     -->
-    <broker xmlns="http://activemq.apache.org/schema/core" brokerName="localhost" dataDirectory="data6" useJmx="true">
+    <broker xmlns="http://activemq.apache.org/schema/core" brokerName="broker1" dataDirectory="data" useJmx="true">
 
         <!--
             For better performances use VM cursor and small memory limit.
@@ -60,10 +60,10 @@
 
                         -->
                         <pendingMessageLimitStrategy>
-                            <constantPendingMessageLimitStrategy limit="1000"/>
+                            <constantPendingMessageLimitStrategy limit="100000"/>
                         </pendingMessageLimitStrategy>
                     </policyEntry>
-                    <policyEntry queue=">" producerFlowControl="true" memoryLimit="1mb">
+                    <policyEntry queue=">" producerFlowControl="false" memoryLimit="1mb">
                         <!-- Use VM cursor for better latency
                              For more information, see:
 
@@ -87,7 +87,7 @@
             http://activemq.apache.org/jmx.html
         -->
         <managementContext>
-            <managementContext createConnector="true" connectorPort="3006"/>
+            <managementContext createConnector="true" connectorPort="3001"/>
         </managementContext>
 
         <!--
@@ -98,7 +98,7 @@
             http://activemq.apache.org/persistence.html
         -->
         <persistenceAdapter>
-            <kahaDB directory="${activemq.data}/kahadb"/>
+            <kahaDB directory="brokers/broker1/data/kahadb"/>
         </persistenceAdapter>
 
 
@@ -144,7 +144,7 @@
         -->
         <transportConnectors>
             <!-- DOS protection, limit concurrent connections to 1000 and frame size to 100MB -->
-            <transportConnector name="openwire" uri="tcp://0.0.0.0:3006?maximumConnections=1000&amp;wireformat.maxFrameSize=104857600"/>
+            <transportConnector name="openwire" uri="tcp://0.0.0.0:2001?maximumConnections=1000&amp;wireformat.maxFrameSize=104857600"/>
         </transportConnectors>
 
         <!-- destroy the spring context on shutdown to stop jetty -->
@@ -159,7 +159,7 @@
 
         Take a look at ${ACTIVEMQ_HOME}/conf/jetty.xml for more details
     -->
-    <import resource="jetty6.xml"/>
+    <import resource="jetty.xml"/>
 
 </beans>
         <!-- END SNIPPET: example -->

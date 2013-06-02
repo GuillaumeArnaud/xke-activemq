@@ -1,6 +1,6 @@
 #!/usr/bin/env groovy
 
-package exercice1
+package exercice2
 
 @Grapes([
 @Grab(group = 'com.netflix.rxjava', module = 'rxjava-groovy', version = '0.8.4'),
@@ -18,7 +18,8 @@ import static java.lang.System.nanoTime
 import static java.util.concurrent.TimeUnit.MILLISECONDS
 import static java.util.concurrent.TimeUnit.NANOSECONDS
 
-def config = new ConfigSlurper().parse(new File('../conf/properties.groovy').toURL()).exercice1
+
+def config = new ConfigSlurper().parse(new File('../conf/properties.groovy').toURL()).exercice2
 
 println config
 
@@ -68,6 +69,7 @@ nbSndr.times {
                     // simulate application work
                     sleep(config.sender.delay)
                 }
+
                 sndStopped << (nanoTime() - startTime - sndCounter * MILLISECONDS.toNanos(config.sender.delay))
             } finally {
                 if (sender) sender.close()
@@ -99,6 +101,7 @@ nbRcvr.times {
                     // simulate application work
                     sleep(config.receiver.delay)
                 }
+                if(msg) msg.acknowledge()
                 rcvStopped << (nanoTime() - startTime - rcvCounter * MILLISECONDS.toNanos(config.receiver.delay))
             } finally {
                 if (receiver) receiver.close()

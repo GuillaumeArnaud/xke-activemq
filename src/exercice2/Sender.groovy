@@ -1,4 +1,4 @@
-package exercice1
+package exercice2
 
 import org.apache.activemq.ActiveMQConnection
 import org.apache.activemq.ActiveMQConnectionFactory

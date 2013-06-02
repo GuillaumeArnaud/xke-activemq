@@ -1,53 +1,85 @@
+package exercice1
+
 import org.apache.activemq.ActiveMQConnection
 import org.apache.activemq.ActiveMQConnectionFactory
-import org.apache.activemq.ActiveMQPrefetchPolicy
 
+import javax.jms.JMSException
 import javax.jms.Message
-
-import javax.jms.QueueConnection
 import javax.jms.QueueReceiver
 import javax.jms.QueueSession
 import javax.jms.Session
 
 public class Receiver {
 
-    final QueueSession session
-    final javax.jms.Queue queue
-    final QueueReceiver receiver
-    final def config
+    QueueSession session
+    javax.jms.Queue queue
+    QueueReceiver receiver
+    ActiveMQConnection connection
+    def config
 
-    public Receiver(def config, String queueName, String url = "localhost:61616") {
-        session = createQueueSession(url)
-        queue = session.createQueue(queueName)
-        receiver = session.createReceiver(queue)
+    public Receiver(def config) {
         this.config = config
+
+        init()
     }
 
-    private static QueueSession createQueueSession(String url) {
-        // create the connection
-        ActiveMQConnection connection = new ActiveMQConnectionFactory(url).createQueueConnection() as ActiveMQConnection
-        connection.start()
+    private void init() {
+        def reattempt = true
 
-        // create the session
-        QueueSession session = connection.createQueueSession(false, Session.AUTO_ACKNOWLEDGE)
+        while (reattempt) {
+            try {
+                connection = new ActiveMQConnectionFactory(config.receiver.url as String).createQueueConnection() as ActiveMQConnection
+                connection.start()
 
-        initMixins(session, connection)
+                session = connection.createQueueSession(false, Session.AUTO_ACKNOWLEDGE)
 
-        session
+                queue = session.createQueue(config.queuename)
+                receiver = session.createReceiver(queue)
+                reattempt = false
+            } catch (JMSException e) {
+                reattempt = true
+                sleep(1000)
+            }
+        }
     }
 
-    private static void initMixins(QueueSession session, QueueConnection connection) {
-        // init the mixins CloseableSession
-        session.session = session
-        session.connection = connection
+    /**
+     * Receive the next message from the broker(s).
+     *
+     * @return the JMS message
+     */
+    def Message receive() {
+        def msg = null
+        def reattempt = true
+
+        while (reattempt)
+            try {
+                msg = receiver.receive()
+                reattempt = false
+            } catch (JMSException e) {
+                close()
+                sleep(1000)
+                init()
+                reattempt = true
+                println "reattempt receiver"
+            }
+        msg
     }
 
+    /**
+     * Close the connection and the session.
+     */
     public void close() {
-        if (session) session.closeAll()
+        try {
+            if (session) {
+                session.close()
+            }
+            if (connection) {
+                connection.close()
+            }
+        } catch (Throwable t) {
+            println "can't close connection"
+            t.printStackTrace()
+        }
     }
-
-    def Message receive(int currCounter) {
-        receiver.receive()
-    }
-
 }
