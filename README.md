@@ -74,7 +74,7 @@ La configuration côté cliente pourrait se faire de façon explicite:
 
     failover:(tcp:\\broker1,tcp:\\broker2)
 
-Mais ça a l'inconvénient d'être plus difficile à scaler. On préfère donc que chaque client se connecte à un seul broker (ça peut être le même) et configurer les brokers pour qu'ils rééquilibrent les clients (cf. cet [article]() http://bsnyderblog.blogspot.fr/2010/10/new-features-in-activemq-54-automatic.html):
+Mais ça a l'inconvénient d'être plus difficile à scaler. On préfère donc que chaque client se connecte à un seul broker (ça peut être le même) et configurer les brokers pour qu'ils rééquilibrent les clients (cf. cet [article](http://bsnyderblog.blogspot.fr/2010/10/new-features-in-activemq-54-automatic.html)):
 
     client => failover:(tcp:\\broker1)
     broker => updateClusterClients="true" rebalanceClusterClients="true" 
