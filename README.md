@@ -48,7 +48,7 @@ Ici on n'utilise le mode [master/slave](http://activemq.apache.org/masterslave.h
 
 Dans la vraie vie le filesystem sera peut-être sur un SAN ou autre, les performances peuvent donc très vite se dégrader. A la place on peut utiliser une base de donnée JDBC. La prochaine version 5.9 d'ActiveMQ proposera une version avec [Zookeeper](http://activemq.apache.org/replicated-leveldb-store.html) en association avec une base LevelDB.
 
-Exercice 4
+# Exercice 4
 
 ## contexte
 
@@ -66,7 +66,19 @@ Exercice 4
 5. si tout fonctionne bien (réception de tous les messages), recommencer en stoppant un deux brokers (`./activemq.sh stop 1`) en cours de route. Que constate-t-on ?
 6. reconfigurer les clients afin d'être résistant à la perte et au retour d'un broker. Vérifier également la répartition des messages à l'aide de la console d'admin ( [http://localhost:8161/admin](http://localhost:8161/admin)  et [http://localhost:8162/admin](http://localhost:8162/admin) )
 
-=> network de broker / failover / balancing des clients
+##  liens et explications
+
+Le [network of brokers](http://activemq.apache.org/networks-of-brokers.html) est un peu plus compliqué à mettre en place. Ici on s'en sert pour simuler un _load balancing_ entre deux brokers, ce qui n'est pas forcément intéressant car on pourrait sans doute obtenir la même chose avec les connexions failover.
+
+La configuration côté cliente pourrait se faire de façon explicite:
+
+    failover:(tcp:\\broker1,tcp:\\broker2)
+
+Mais ça a l'inconvénient d'être plus difficile à scaler. On préfère donc que chaque client se connecte à un seul broker (ça peut être le même) et configurer les brokers pour qu'ils rééquilibrent les clients (cf. cet [article]() http://bsnyderblog.blogspot.fr/2010/10/new-features-in-activemq-54-automatic.html):
+
+    client => failover:(tcp:\\broker1)
+    broker => updateClusterClients="true" rebalanceClusterClients="true" 
+
 
 Exercice 5
 
