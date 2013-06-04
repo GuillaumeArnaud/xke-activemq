@@ -59,10 +59,10 @@ Dans la vraie vie le filesystem sera peut-être sur un SAN ou autre, les perform
 
 ## à faire
 
-1. mettre en place le _network of brokers_ pour les brokers 1 et 2 (rollbacker la configuration master/slave).
+1. mettre en place le _network of brokers_ pour les brokers 1 et 2 (rollbacker la configuration master/slave) afin de _load balancer_ les clients.
 2. changer les uris des _senders_ et _receivers_ afin qu'il y ait un sender et un receiver sur chacun des brokers.
 3. lancer les deux serveurs `./activemq.sh start 1 2`
-4. lancer le main de l'exercice 4 (`main.groovy`)
+4. lancer le _main_ de l'exercice 4 (`main.groovy`)
 5. si tout fonctionne bien (réception de tous les messages), recommencer en stoppant un deux brokers (`./activemq.sh stop 1`) en cours de route. Que constate-t-on ?
 6. reconfigurer les clients afin d'être résistant à la perte et au retour d'un broker. Vérifier également la répartition des messages à l'aide de la console d'admin ( [http://localhost:8161/admin](http://localhost:8161/admin)  et [http://localhost:8162/admin](http://localhost:8162/admin) )
 
@@ -80,14 +80,28 @@ Mais ça a l'inconvénient d'être plus difficile à scaler. On préfère donc q
     broker => updateClusterClients="true" rebalanceClusterClients="true" 
 
 
-Exercice 5
+# Exercice 5
+
+## contexte
 
 * 2 brokers _sender_ / 2 brokers _receiver_ / 2 senders / 2 receivers
 * start / stop des brokers à tour de rôle
 * aucune perte de messages
 
-=> mode unidirectionnel / load balancing à l'émission et réception
+## à faire
 
+1. mettre en place le _network of brokers_ pour les brokers 1,2 ,3 et 4 (rollbacker la configuration master/slave) afin de _load balancer_ les _senders_ d'un côté et les _receivers_ de l'autre.
+2. changer les uris des _senders_ et _receivers_ afin qu'il y ait les senders pointent sur les brokers 1 et 2 et que les receivers pointent sur les brokers 3 et 4. 
+3. lancer les quatre serveurs `./activemq.sh start 1 2 3 4`
+4. lancer le _main_ de l'exercice 5 (`main.groovy`)
+5. assurez-vous de bien recevoir tous les messages. Dans les consoles d'admin, observez le nombre de messages qui passent dans les topics _ActiveMQ.Advisory.*_.
+6. recommencez les tests en stoppant certains serveurs et en vous assurant de ne pas perdre de messages.
+7. recommencez les tests avec cette fois 10 receveurs sur le broker 3 et 1 seul sur le broker 4. Que constate-t-on ? Essayer de répartir les messages équitablement.
+
+##  liens et explications
+
+Ce mode permet de découpler le _load balancing_ entre les émetteurs et les receveurs. 
+Les liens entre les brokers 1/2 et les brokers 3/4 peuvent être configurer en mode _duplex_, ce qui permet de passer certains firewall.
 Exercice 6
 
 * 2 brokers en network duplex / 2 brokers en passif / 1 à n senders / 1 à n receivers
