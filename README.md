@@ -15,7 +15,7 @@ Hands on pour le XKE d'ActiveMQ
 
 1. créer les connexions pour le `Sender` et pour le `Receiver`
 2. lancer le script `./activemq.sh start 1`
-3. lancer le script `./main.groovy`
+3. lancer le script `./exercice1/main.groovy`
 4. vérifier que tous les messages sont bien reçus
 5. relancer l'envoi des messages mais redémarrer le broker durant le test: `./activemq.sh restart 1`
 6. corriger les erreurs afin de ne perdre aucun message
@@ -42,13 +42,13 @@ L'astuce ici est d'utiliser un simple `failover:(...)` autour des uris. La parti
 
 ## à faire
 
-1. éditer le fichier `brokers/broker2/broker.xml` afin qu'il pointe sur la même base que le _broker 1_
+1. éditer le fichier `brokers/broker2/broker.xml` afin qu'il pointe sur la même base que le broker 1
 2. changer les uris pour les _senders_ et les _receivers_ afin de tenir compte du slave
 3. lancer les deux serveurs `./activemq.sh start 1 2`
 4. connecter vous sur les interfaces d'admin des deux brokers ( [http://localhost:8161/admin](http://localhost:8161/admin)  et [http://localhost:8162/admin](http://localhost:8162/admin) ). Que constate-t-on ?
-5. lancer le main de l'exercice 3 (`./main.groovy`)
+5. lancer le main de l'exercice 3 (`./exercice3/main.groovy`)
 6. arrêter le master et attendre la fin du tir. On ne doit pas perdre de message
-7. refaire le test pour tester le failback.
+7. refaire le test pour tester le failback. Que constate-t-on ?
 
 ## liens et explications
 
@@ -70,7 +70,7 @@ Dans la vraie vie le filesystem sera peut-être sur un SAN ou autre, les perform
 1. mettre en place le _network of brokers_ pour les brokers 1 et 2 (rollbacker la configuration master/slave) afin de _load balancer_ les clients.
 2. changer les uris des _senders_ et _receivers_ afin qu'il y ait un sender et un receiver sur chacun des brokers.
 3. lancer les deux serveurs `./activemq.sh start 1 2`
-4. lancer le _main_ de l'exercice 4 (`./main.groovy`)
+4. lancer le _main_ de l'exercice 4 (`./exercice4/main.groovy`)
 5. si tout fonctionne bien (réception de tous les messages), recommencer en stoppant un deux brokers (`./activemq.sh stop 1`) en cours de route. Que constate-t-on ?
 6. reconfigurer les clients afin d'être résistant à la perte et au retour d'un broker (`./activemq.sh restart 1`). Vérifier également la répartition des messages à l'aide de la console d'admin ( [http://localhost:8161/admin](http://localhost:8161/admin)  et [http://localhost:8162/admin](http://localhost:8162/admin) )
 
@@ -102,7 +102,7 @@ Ce mode n'est pas complètement _hautement disponible_, car lorsqu'on perd un se
 1. mettre en place le _network of brokers_ pour les brokers 1,2 ,3 et 4 (rollbacker la configuration master/slave) afin de _load balancer_ les _senders_ d'un côté et les _receivers_ de l'autre.
 2. changer les uris des _senders_ et _receivers_ afin qu'il y ait les senders pointent sur les brokers 1 et 2 et que les receivers pointent sur les brokers 3 et 4. 
 3. lancer les quatre serveurs `./activemq.sh start 1 2 3 4`
-4. lancer le _main_ de l'exercice 5 (`./main.groovy`)
+4. lancer le _main_ de l'exercice 5 (`./exercice5/main.groovy`)
 5. assurez-vous de bien recevoir tous les messages. Dans les consoles d'admin, observez le nombre de messages qui passent dans les topics _ActiveMQ.Advisory.*_.
 6. recommencez les tests en redémarrant certains serveurs et en vous assurant de ne pas perdre de messages.
 7. recommencez les tests avec cette fois 10 receveurs sur le broker 3 et 1 seul sur le broker 4. Que constate-t-on ? Essayer de répartir les messages équitablement.
@@ -130,7 +130,7 @@ Par défaut, les réseaux de brokers sont activés avec l'option `conduitSubscri
 1. configurer un réseau entre le broker 1 et 3
 2. positionner le broker 2 en slave du broker 1 et le broker 4 en slave du broker 3.
 3. lancer les quatre serveurs `./activemq.sh start 1 2 3 4`
-4. lancer le _main_ de l'exercice 6 (`./main.groovy`)
+4. lancer le _main_ de l'exercice 6 (`./exercice6/main.groovy`)
 5. arrêtez (sans redémarrer) et vérifiez que vous n'avez perdu aucun message
 
 
