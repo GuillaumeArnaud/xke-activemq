@@ -5,11 +5,13 @@ Hands on pour le XKE d'ActiveMQ
 
 # Exercice 1
 
+## contexte
+
 * 1 broker / 1 sender / 1 receiver
 * start / stop du broker
 * pas de perte de message
 
-A faire:
+## A faire:
 
 1. créer les connexions pour le `Sender` et pour le `Receiver`
 2. lancer le script `./activemq.sh start 1`
@@ -17,6 +19,12 @@ A faire:
 4. vérifier que tous les messages sont bien reçus
 5. relancer l'envoi des messages mais redémarrer le broker durant le test: `./activemq.sh restart 1`
 6. corriger les erreurs afin de ne perdre aucun message
+
+## liens et explications
+
+Garantir qu'on ne perd pas de messages lorsqu'on perd son broker peut être assez fastidieux. On peut s'en sortir avec des `try/catch` mais dans le cas d'un flux continu de messages on aura très vite le problème de stocker les messages entrants et de limiter l'impact (thread, mémoires ...) sur l'application.
+
+L'astuce ici est d'utiliser un simple `failover:(...)` autour des uris. La parti reconnexion est alors gérée dans le _driver_ ActiveMQ, les exceptions ne sont pas remontées aux clients.
 
 # Exercice 2
 
