@@ -123,15 +123,12 @@ Par défaut, les réseaux de brokers sont activés avec l'option `conduitSubscri
 2. positionner le broker 2 en slave du broker 1 et le broker 4 en slave du broker 3.
 3. lancer les quatre serveurs `./activemq.sh start 1 2 3 4`
 4. lancer le _main_ de l'exercice 6 (`./main.groovy`)
-5. arrêtez et vérifiez que vous n'avez perdu aucun message
+5. arrêtez (sans redémarrer) et vérifiez que vous n'avez perdu aucun message
+
 
 ##  liens et explications
 
-Cette topologie associe les deux modes, _master/slave_ et _network of brokers_. 
+Cette topologie associe les deux modes, _master/slave_ et _network of brokers_. Parmi les inconvénients on pourrait reprocher de devoir dupliquer tous les brokers mais de tous façon il est préférable de ne pas avoir un réseau trop important.
 
-# Exercice 7
+Ce [blog](http://tmielke.blogspot.fr/2011/09/activemq-network-bridge-to-masterslave.html) explique assez bien ce mode. Le network doit utiliser le protocol `masterslave:(...)` pour qu'il soit bien notifié lorsque le master distant tombe.
 
-* 1 à n brokers en multicast / 0 network / n senders / n receivers
-* request / reply (queues temporaires)
-
-=> scaling / performance
