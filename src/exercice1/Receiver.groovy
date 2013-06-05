@@ -24,23 +24,15 @@ public class Receiver {
     }
 
     private void init() {
-        def reattempt = true
+        // TODO créer la connexion ActiveMQ (l'url se trouve dans l'objet config.receiver.url)
+        //connection =
+        connection.start()
 
-        while (reattempt) {
-            try {
-                connection = new ActiveMQConnectionFactory(config.receiver.url as String).createQueueConnection() as ActiveMQConnection
-                connection.start()
+        // TODO crée une QueueSession en AUTO_ACKNOWLEDGE
+        // session =
 
-                session = connection.createQueueSession(false, Session.AUTO_ACKNOWLEDGE)
-
-                queue = session.createQueue(config.queuename)
-                receiver = session.createReceiver(queue)
-                reattempt = false
-            } catch (JMSException e) {
-                reattempt = true
-                sleep(1000)
-            }
-        }
+        queue = session.createQueue(config.queuename)
+        receiver = session.createReceiver(queue)
     }
 
     /**
@@ -49,21 +41,7 @@ public class Receiver {
      * @return the JMS message
      */
     def Message receive() {
-        def msg = null
-        def reattempt = true
-
-        while (reattempt)
-            try {
-                msg = receiver.receive()
-                reattempt = false
-            } catch (JMSException e) {
-                close()
-                sleep(1000)
-                init()
-                reattempt = true
-                println "reattempt receiver"
-            }
-        msg
+        receiver.receive()
     }
 
     /**

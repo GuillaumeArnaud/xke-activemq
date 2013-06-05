@@ -1,10 +1,11 @@
-export ACTIVEMQ_HOME=/Users/garnaud25/applications/apache-activemq-5.8.0
+export ACTIVEMQ_HOME= LE PATH VERS ACTIVEMQ
+export HOME_PROJECT= LE PATH DU PROJET xke-activemq
 
 for id in "${@:2}"
 do
 
-	export ACTIVEMQ_BASE=/Users/garnaud25/workspace/xke-activemq/brokers/broker${id}/
-	export ACTIVEMQ_DATA=/Users/garnaud25/workspace/xke-activemq/brokers/broker${id}/data/
+	export ACTIVEMQ_BASE=$HOME_PROJECT/brokers/broker${id}/
+	export ACTIVEMQ_DATA=$HOME_PROJECT/brokers/broker${id}/data/
 
 	case $1 in
 		"start")
