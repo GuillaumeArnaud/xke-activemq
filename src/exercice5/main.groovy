@@ -1,6 +1,6 @@
 #!/usr/bin/env groovy
 
-package exercice4
+package exercice5
 
 @Grapes([
 @Grab(group = 'com.netflix.rxjava', module = 'rxjava-groovy', version = '0.8.4'),
