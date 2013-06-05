@@ -11,9 +11,8 @@ do
 			$ACTIVEMQ_HOME/bin/activemq start -Dactivemq.data=$ACTIVEMQ_DATA -Dactivemq.home=$ACTIVEMQ_HOME -Dactivemq.base=$ACTIVEMQ_BASE xbean:file:$ACTIVEMQ_BASE/conf/broker.xml;;
 		"stop")
 			$ACTIVEMQ_HOME/bin/activemq stop --jmxurl service:jmx:rmi:///jndi/rmi://localhost:300${id}/jmxrmi "broker${id}";;
-			$ACTIVEMQ_HOME/bin/activemq stop  -Dactivemq.data=$ACTIVEMQ_DATA -Dactivemq.home=$ACTIVEMQ_HOME -Dactivemq.base=$ACTIVEMQ_BASE "broker${id}";;
 		"restart")
-			$ACTIVEMQ_HOME/bin/activemq stop  -Dactivemq.data=$ACTIVEMQ_DATA -Dactivemq.home=$ACTIVEMQ_HOME -Dactivemq.base=$ACTIVEMQ_BASE "broker${id}";
+			$ACTIVEMQ_HOME/bin/activemq stop --jmxurl service:jmx:rmi:///jndi/rmi://localhost:300${id}/jmxrmi "broker${id}";
 			$ACTIVEMQ_HOME/bin/activemq start -Dactivemq.data=$ACTIVEMQ_DATA -Dactivemq.home=$ACTIVEMQ_HOME -Dactivemq.base=$ACTIVEMQ_BASE xbean:file:$ACTIVEMQ_BASE/conf/broker.xml;;
 	esac
 

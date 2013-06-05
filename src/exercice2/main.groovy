@@ -19,7 +19,7 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS
 import static java.util.concurrent.TimeUnit.NANOSECONDS
 
 
-def config = new ConfigSlurper().parse(new File('../conf/properties.groovy').toURL()).exercice2
+def config = new ConfigSlurper().parse(new File('conf/properties.groovy').toURL()).exercice2
 
 println config
 

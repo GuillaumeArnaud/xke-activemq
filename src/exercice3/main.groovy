@@ -1,6 +1,6 @@
 #!/usr/bin/env groovy
 
-package exercice1
+package exercice3
 
 @Grapes([
 @Grab(group = 'com.netflix.rxjava', module = 'rxjava-groovy', version = '0.8.4'),
@@ -18,16 +18,17 @@ import static java.lang.System.nanoTime
 import static java.util.concurrent.TimeUnit.MILLISECONDS
 import static java.util.concurrent.TimeUnit.NANOSECONDS
 
-def config = new ConfigSlurper().parse(new File('conf/properties.groovy').toURL()).exercice1
+
+def config = new ConfigSlurper().parse(new File('./conf/properties.groovy').toURL()).exercice3
 
 println config
 
-int msqCnt = config.messages.count
+int msgCnt = config.messages.count
 int nbSndr = config.sender.count
 int nbRcvr = config.receiver.count
 String queueName = config.queuename
 
-println "$msqCnt messages of size ${config.messages.size.mean} with $nbSndr senders and $nbRcvr receivers for queue $queueName"
+println "$msgCnt messages of size ${config.messages.size.mean} with $nbSndr senders and $nbRcvr receivers for queue $queueName"
 
 AtomicLong currSndMsg = new AtomicLong(0), currRcvMsg = new AtomicLong(0)
 def rcvStopped = new LinkedBlockingQueue<Long>()
@@ -61,13 +62,14 @@ nbSndr.times {
                 def sndCounter = 0
                 println "start the sender $it"
                 long startTime = nanoTime()
-                while (currSndMsg.get() < msqCnt) {
+                while (currSndMsg.get() < msgCnt) {
                     long m = currSndMsg.getAndIncrement()
                     sender.send(sender.create(m))
                     sndCounter++
                     // simulate application work
                     sleep(config.sender.delay)
                 }
+
                 sndStopped << (nanoTime() - startTime - sndCounter * MILLISECONDS.toNanos(config.sender.delay))
             } finally {
                 if (sender) sender.close()
@@ -99,6 +101,7 @@ nbRcvr.times {
                     // simulate application work
                     sleep(config.receiver.delay)
                 }
+                if(msg) msg.acknowledge()
                 rcvStopped << (nanoTime() - startTime - rcvCounter * MILLISECONDS.toNanos(config.receiver.delay))
             } finally {
                 if (receiver) receiver.close()

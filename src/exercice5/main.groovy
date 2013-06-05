@@ -1,6 +1,6 @@
 #!/usr/bin/env groovy
 
-package exercice1
+package exercice4
 
 @Grapes([
 @Grab(group = 'com.netflix.rxjava', module = 'rxjava-groovy', version = '0.8.4'),
@@ -18,16 +18,17 @@ import static java.lang.System.nanoTime
 import static java.util.concurrent.TimeUnit.MILLISECONDS
 import static java.util.concurrent.TimeUnit.NANOSECONDS
 
-def config = new ConfigSlurper().parse(new File('conf/properties.groovy').toURL()).exercice1
+
+def config = new ConfigSlurper().parse(new File('./conf/properties.groovy').toURL()).exercice5
 
 println config
 
-int msqCnt = config.messages.count
-int nbSndr = config.sender.count
-int nbRcvr = config.receiver.count
+int msgCnt = config.messages.count
+int nbSndr = config.senders.size()
+int nbRcvr = config.receivers.size()
 String queueName = config.queuename
 
-println "$msqCnt messages of size ${config.messages.size.mean} with $nbSndr senders and $nbRcvr receivers for queue $queueName"
+println "$msgCnt messages of size ${config.messages.size.mean} with $nbSndr senders and $nbRcvr receivers for queue $queueName"
 
 AtomicLong currSndMsg = new AtomicLong(0), currRcvMsg = new AtomicLong(0)
 def rcvStopped = new LinkedBlockingQueue<Long>()
@@ -51,24 +52,25 @@ config.brokers.each { brokerId ->
 }
 
 // Create and start the threads for sending messages
-nbSndr.times {
+config.senders.each { key, cfg ->
     new Thread(new Runnable() {
         @Override
         void run() {
             def sender
             try {
-                sender = new Sender(config)
+                sender = new Sender(config, key)
                 def sndCounter = 0
-                println "start the sender $it"
+                println "start the sender $key"
                 long startTime = nanoTime()
-                while (currSndMsg.get() < msqCnt) {
+                while (currSndMsg.get() < msgCnt) {
                     long m = currSndMsg.getAndIncrement()
                     sender.send(sender.create(m))
                     sndCounter++
                     // simulate application work
-                    sleep(config.sender.delay)
+                    sleep(config.senders[key].delay)
                 }
-                sndStopped << (nanoTime() - startTime - sndCounter * MILLISECONDS.toNanos(config.sender.delay))
+
+                sndStopped << (nanoTime() - startTime - sndCounter * MILLISECONDS.toNanos(config.senders[key].delay))
             } finally {
                 if (sender) sender.close()
             }
@@ -77,29 +79,31 @@ nbSndr.times {
 }
 
 // Create and start the threads for receiving messages
-nbRcvr.times {
+config.receivers.each { key, cfg ->
     new Thread(new Runnable() {
         @Override
         void run() {
             Receiver receiver
             try {
                 def stop = false
-                receiver = new Receiver(config)
-                println "start the receiver $it"
+                receiver = new Receiver(config, key)
+                println "start the receiver $key"
                 Message msg
                 int rcvCounter = 0
+                def maxMsgs = config.receivers[key].maxMessages
                 def startTime = nanoTime()
-                while (!stop) {
+                while (!stop && (!maxMsgs || rcvCounter <= maxMsgs)) {
                     msg = receiver.receive()
                     rcvCounter++
                     stop = msg.getBooleanProperty("poison.pill")
                     if (!stop) currRcvMsg.incrementAndGet()
-                    else println "poison pill received for receiver $it"
+                    else println "poison pill received for receiver $key"
 
                     // simulate application work
-                    sleep(config.receiver.delay)
+                    sleep(config.receivers[key].delay)
                 }
-                rcvStopped << (nanoTime() - startTime - rcvCounter * MILLISECONDS.toNanos(config.receiver.delay))
+                println "receiver $key received $rcvCounter messages"
+                rcvStopped << (nanoTime() - startTime - rcvCounter * MILLISECONDS.toNanos(config.receivers[key].delay))
             } finally {
                 if (receiver) receiver.close()
             }
@@ -131,7 +135,8 @@ new Thread(new Runnable() {
         // send poison pills to receivers
         def sender
         try {
-            sender = new Sender(config)
+            println "send poison pill to ${config.poisonpill}"
+            sender = new Sender(config, config.poisonpill)
 
             def poisonPill = sender.create(0)
             poisonPill.setBooleanProperty("poison.pill", true)
