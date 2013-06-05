@@ -29,16 +29,27 @@ L'astuce ici est d'utiliser un simple `failover:(...)` autour des uris. La parti
 
 # Exercice 2
 
+## contexte
+
 * 1 broker / 1 sender / 1 receiver
 * taille des messages variables
 * test de performances
 
-=> grouper / acknowledge / fetch
+## à faire
+
+Sujet libre: 
+
+* tester le prefetch au niveau du receiver
+* faire varier la taille des messages pour trouver un débit maximal
+* scaler le nombre de clients
+* ...
+
+
 
 # Exercice 3
 
 ## contexte
-* 2 brokers actif/passif / 1 à n senders / 1 à n receiver
+* 2 brokers actif/passif / 1 à n senders / 1 à n receivers
 * start / stop du master
 
 ## à faire
@@ -104,9 +115,9 @@ Ce mode n'est pas complètement _hautement disponible_, car lorsqu'on perd un se
 2. changer les uris des _senders_ et _receivers_ afin qu'il y ait les senders pointent sur les brokers 1 et 2 et que les receivers pointent sur les brokers 3 et 4. 
 3. lancer les quatre serveurs `./activemq.sh start 1 2 3 4`
 4. lancer le _main_ de l'exercice 5 (`./exercice5/main.groovy`)
-5. assurez-vous de bien recevoir tous les messages. Dans les consoles d'admin, observez le nombre de messages qui passent dans les topics _ActiveMQ.Advisory.*_.
+5. assurez-vous de bien recevoir tous les messages. Dans les consoles d'admin, observez le nombre de messages qui passent dans les queues et dans la partie _network_.
 6. recommencez les tests en redémarrant certains serveurs et en vous assurant de ne pas perdre de messages.
-7. recommencez les tests avec cette fois 10 receveurs sur le broker 3 et 1 seul sur le broker 4. Que constate-t-on ? Essayer de répartir les messages équitablement.
+7. recommencez les tests avec cette fois 2 receveurs sur le broker 3 et 1 seul sur le broker 4. Que constate-t-on ? Essayer de répartir les messages équitablement.
 
 ##  liens et explications
 
