@@ -1,7 +1,7 @@
 xke-activemq
 ============
 
-Hands on pour le XKE d'ActiveMQ
+Hand's on pour le XKE d'ActiveMQ
 
 # Exercice 1
 
@@ -13,12 +13,13 @@ Hands on pour le XKE d'ActiveMQ
 
 ## A faire:
 
-1. créer les connexions pour le `Sender` et pour le `Receiver`
-2. lancer le script `./activemq.sh start 1`
-3. lancer le script `./exercice1/main.groovy`
-4. vérifier que tous les messages sont bien reçus
-5. relancer l'envoi des messages mais redémarrer le broker durant le test: `./activemq.sh restart 1`
-6. corriger les erreurs afin de ne perdre aucun message
+1. créer les connexions pour le `Receiver`
+2. alimenter le fichier de configuration `./src/conf/properties.groovy` avec la bonne URL.
+3. lancer le script `./activemq.sh start 1`
+4. lancer le script `./exercice1/main.groovy`
+5. vérifier que tous les messages sont bien reçus
+6. relancer l'envoi des messages mais redémarrer le broker durant le test: `./activemq.sh restart 1`
+7. corriger les erreurs afin de ne perdre aucun message
 
 ## liens et explications
 
