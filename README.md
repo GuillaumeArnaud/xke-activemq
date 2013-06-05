@@ -3,6 +3,65 @@ xke-activemq
 
 Hand's on pour le XKE d'ActiveMQ
 
+
+# Installation
+
+Pour ce hand's on on aura besoin de:
+
+* [groovy 2+](http://groovy.codehaus.org/Download?nc)
+* [activemq 5.8](http://activemq.apache.org/activemq-580-release.html)
+
+Faites ensuite un clone du projet:
+
+    git clone https://github.com/GuillaumeArnaud/xke-activemq.git
+
+Dans le fichier `activemq.sh` changer les variables d'environnements selon vos installations.
+
+Vous pouvez démarrer 1 à 4 brokers, par exemple:
+
+    $ ./activemq.sh start 1 2 3 4
+    $ ./activemq.sh stop 1
+    $ ./activemq.sh restart 3
+
+La configuration des brokers se trouve dans ces fichiers:
+
+    ./brokers/broker1/broker.xml
+    ./brokers/broker2/broker.xml
+    ./brokers/broker3/broker.xml
+    ./brokers/broker4/broker.xml
+
+Les logs seront ici:
+
+    ./brokers/broker1/data/
+    ./brokers/broker2/data/
+    ./brokers/broker3/data/
+    ./brokers/broker4/data/
+
+Les ports tcp sont:
+
+    tcp://localhost:2001
+    tcp://localhost:2002
+    tcp://localhost:2003
+    tcp://localhost:2004
+
+Les urls d'admin:
+
+    http://localhost:8161
+    http://localhost:8162
+    http://localhost:8163
+    http://localhost:8164
+
+Et les ports JMX sont 3001, 3002, 3003 et 3004.
+
+Pour lancer un exercice:
+
+    $ cd src/
+    $ ./exercice1/main.groovy
+    
+Le fichier de configuration pour tous les exercices est `./src/conf/properties.groovy`.
+
+
+
 # Exercice 1
 
 ## contexte
@@ -42,6 +101,7 @@ Sujet libre:
 * tester le prefetch au niveau du receiver
 * faire varier la taille des messages pour trouver un débit maximal
 * scaler le nombre de clients
+* kahadb vs leveldb
 * ...
 
 
